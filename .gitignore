@@ -36,6 +36,9 @@ pnpm-debug.log*
 # reference repos (cloned for dev reference only)
 .ref/
 
+# export temp files
+.export-tmp/
+
 # misc
 /tmp
 /out-tsc
