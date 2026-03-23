@@ -66,12 +66,20 @@ export default async function ProjectsPage() {
           </div>
         </div>
 
-        <a
-          href={`/annotate/${DEMO_PROJECT.slug}`}
-          className="inline-block rounded bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
-        >
-          Start Annotating
-        </a>
+        <div className="flex gap-3">
+          <a
+            href={`/annotate/${DEMO_PROJECT.slug}`}
+            className="inline-block rounded bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
+          >
+            Start Annotating
+          </a>
+          <a
+            href={`/projects/${DEMO_PROJECT.slug}/stats`}
+            className="inline-block rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            View Stats
+          </a>
+        </div>
       </div>
     </div>
   );

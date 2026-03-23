@@ -191,9 +191,17 @@ export function AnnotationPage({
           </a>
           <h2 className="text-lg font-medium">{projectName}</h2>
         </div>
-        <div className="text-sm text-gray-500 tabular-nums">
-          Item {currentIndex + 1}
-          {itemCount > 0 && ` of ${itemCount.toLocaleString()}`}
+        <div className="flex items-center gap-4">
+          <a
+            href={`/projects/${projectSlug}/stats`}
+            className="text-sm text-blue-600 hover:underline"
+          >
+            Stats
+          </a>
+          <span className="text-sm text-gray-500 tabular-nums">
+            Item {currentIndex + 1}
+            {itemCount > 0 && ` of ${itemCount.toLocaleString()}`}
+          </span>
         </div>
       </div>
 
