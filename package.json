@@ -17,5 +17,9 @@
     "turbo": "^2.5.0",
     "typescript": "^5.7.0"
   },
-  "packageManager": "pnpm@10.6.0"
+  "packageManager": "pnpm@10.6.0",
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild", "sharp", "@next/swc-darwin-arm64"]
+  },
+  "allowedBuiltDependencies": ["esbuild", "sharp"]
 }
