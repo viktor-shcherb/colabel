@@ -1,37 +1,18 @@
-import { fetchItemCount } from "@/lib/hf/client";
+import { getProjectBySlug } from "@/lib/projects";
+import { getCachedItemCount } from "@/lib/cache";
 
-// Hardcoded demo project config — will be replaced by DB-driven config in stage 05
-const DEMO_PROJECT = {
-  slug: "wildchat-quality",
-  name: "WildChat Quality Annotation",
-  description:
-    "Annotate chat conversations from WildChat for quality and safety.",
-  hf_dataset: "allenai/WildChat-1M",
-  hf_config: "default",
-  hf_split: "train",
-  label_groups: {
-    quality: {
-      title: "Quality",
-      single_choice: true,
-      labels: ["good", "bad"],
-    },
-    safety: {
-      title: "Safety",
-      single_choice: false,
-      labels: ["safe", "unsafe", "borderline"],
-    },
-  },
-};
+// Use shared project config
+const DEMO_PROJECT = getProjectBySlug("wildchat-quality")!;
 
 export default async function ProjectsPage() {
   let itemCount: number | null = null;
   let error: string | null = null;
 
   try {
-    itemCount = await fetchItemCount(
-      DEMO_PROJECT.hf_dataset,
-      DEMO_PROJECT.hf_config,
-      DEMO_PROJECT.hf_split,
+    itemCount = await getCachedItemCount(
+      DEMO_PROJECT.config.hf_dataset,
+      DEMO_PROJECT.config.hf_config,
+      DEMO_PROJECT.config.hf_split,
     );
   } catch (e) {
     error =
@@ -58,13 +39,13 @@ export default async function ProjectsPage() {
           <div>
             <span className="text-gray-500">Dataset:</span>{" "}
             <code className="rounded bg-gray-100 px-1 text-xs">
-              {DEMO_PROJECT.hf_dataset}
+              {DEMO_PROJECT.config.hf_dataset}
             </code>
           </div>
           <div>
             <span className="text-gray-500">Split:</span>{" "}
             <code className="rounded bg-gray-100 px-1 text-xs">
-              {DEMO_PROJECT.hf_split}
+              {DEMO_PROJECT.config.hf_split}
             </code>
           </div>
           <div>
@@ -80,13 +61,13 @@ export default async function ProjectsPage() {
           <div>
             <span className="text-gray-500">Label groups:</span>{" "}
             <span>
-              {Object.keys(DEMO_PROJECT.label_groups).join(", ")}
+              {Object.keys(DEMO_PROJECT.config.label_groups).join(", ")}
             </span>
           </div>
         </div>
 
         <a
-          href={`/annotate?project=${DEMO_PROJECT.slug}`}
+          href={`/annotate/${DEMO_PROJECT.slug}`}
           className="inline-block rounded bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
         >
           Start Annotating
