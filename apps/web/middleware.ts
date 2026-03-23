@@ -1,7 +1,12 @@
-import { withMiddlewareAuthRequired } from "@auth0/nextjs-auth0/edge";
+import type { NextRequest } from "next/server";
+import { auth0 } from "@/lib/auth";
 
-export default withMiddlewareAuthRequired();
+export async function middleware(request: NextRequest) {
+  return await auth0.middleware(request);
+}
 
 export const config = {
-  matcher: ["/projects/:path*", "/annotate/:path*", "/stats/:path*"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+  ],
 };

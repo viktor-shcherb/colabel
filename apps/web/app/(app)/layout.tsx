@@ -7,7 +7,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <a href="/projects" className="hover:underline">
             Projects
           </a>
-          <a href="/api/auth/logout" className="hover:underline">
+          <a href="/auth/logout" className="hover:underline">
             Log out
           </a>
         </nav>
