@@ -15,7 +15,7 @@ export default async function Home() {
         Collaborative text annotation platform for research teams.
       </p>
       <a
-        href="/api/auth/login"
+        href="/auth/login"
         className="rounded bg-gray-900 px-6 py-3 text-sm font-medium text-white hover:bg-gray-700"
       >
         Log in with Google

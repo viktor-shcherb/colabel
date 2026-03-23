@@ -37,7 +37,7 @@ export default async function AppLayout({
           <span className="text-gray-400">|</span>
           <span className="text-gray-600">{userName}</span>
           <a
-            href="/api/auth/logout"
+            href="/auth/logout"
             className="text-red-600 hover:underline"
           >
             Log out
