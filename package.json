@@ -18,7 +18,8 @@
     "typescript": "^5.7.0"
   },
   "packageManager": "pnpm@10.6.0",
-  "engines": {
-    "node": ">=22"
-  }
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild", "sharp", "@next/swc-darwin-arm64"]
+  },
+  "allowedBuiltDependencies": ["esbuild", "sharp"]
 }

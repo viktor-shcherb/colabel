@@ -1,12 +1,30 @@
 import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { auth0 } from "@/lib/auth";
 
 export async function middleware(request: NextRequest) {
-  return await auth0.middleware(request);
+  // Let auth0 handle /api/auth/* routes (login, callback, logout, etc.)
+  const authRes = await auth0.middleware(request);
+
+  // For /api/auth/* paths, return the auth response directly
+  if (request.nextUrl.pathname.startsWith("/api/auth")) {
+    return authRes;
+  }
+
+  // For protected app routes, check session
+  const session = await auth0.getSession(request);
+  if (!session) {
+    return NextResponse.redirect(new URL("/api/auth/login", request.url));
+  }
+
+  return authRes;
 }
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+    "/api/auth/:path*",
+    "/projects/:path*",
+    "/annotate/:path*",
+    "/stats/:path*",
   ],
 };
