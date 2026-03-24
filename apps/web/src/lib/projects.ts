@@ -91,7 +91,7 @@ The goal is to categorize user messages by:
    * If it asks for **facts, lists, explanations, instructions, code, or original content** not tied to copying/imitating expression → **\`novel\`**.
 3. **Edge rule:** If the prompt has **multiple parts**, pick **\`specific\`** if **any** part refers to a specific work/creator; pick **\`close\`** if **any** part asks for mimic/summary/translation/continuation.`,
     config: {
-      hf_dataset: "viktor-shcherb/colabel-copyright-substitution-risk",
+      hf_dataset: "viktoroo/colabel-copyright-substitution-risk",
       hf_config: "default",
       hf_split: "train",
       item_count: 5000,
@@ -147,7 +147,7 @@ The goal is to categorize each user message by which AI-assisted writing mode it
    - If the prompt contains multiple parts and **any** part requires full generative drafting → **AI-primary**.
    - Only if **all** parts strictly ask for editing or polishing existing text → **human-primary**.`,
     config: {
-      hf_dataset: "viktor-shcherb/colabel-ai-task-classification",
+      hf_dataset: "viktoroo/colabel-ai-task-classification",
       hf_config: "default",
       hf_split: "train",
       item_count: 5000,

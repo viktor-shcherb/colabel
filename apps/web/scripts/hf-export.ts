@@ -136,7 +136,7 @@ const DEMO_PROJECTS: Record<string, ProjectInfo> = {
     description:
       "Annotation task evaluating prompts for specificity and expression similarity.",
     config: {
-      hf_dataset: "viktor-shcherb/colabel-copyright-substitution-risk",
+      hf_dataset: "viktoroo/colabel-copyright-substitution-risk",
       hf_config: "default",
       hf_split: "train",
       item_count: 5000,
@@ -164,7 +164,7 @@ const DEMO_PROJECTS: Record<string, ProjectInfo> = {
     description:
       "Annotation task for classifying user prompts by AI-assisted writing mode.",
     config: {
-      hf_dataset: "viktor-shcherb/colabel-ai-task-classification",
+      hf_dataset: "viktoroo/colabel-ai-task-classification",
       hf_config: "default",
       hf_split: "train",
       item_count: 5000,

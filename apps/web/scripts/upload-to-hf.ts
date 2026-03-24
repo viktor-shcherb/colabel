@@ -94,7 +94,7 @@ async function main(): Promise<void> {
   const jsonlContent = lines.join("\n") + "\n";
 
   // Create/ensure HF dataset repo
-  const repoName = `viktor-shcherb/colabel-${project}`;
+  const repoName = `viktoroo/colabel-${project}`;
   const credentials = { accessToken: token };
   const repo: RepoDesignation = { type: "dataset", name: repoName };
 

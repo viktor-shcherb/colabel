@@ -93,7 +93,7 @@ const PROJECTS: ProjectSeed[] = [
       "Annotation task evaluating prompts for specificity (reference to specific works or styles) and expression similarity (imitation or summarization of existing content).",
     taskType: "chat",
     config: {
-      hf_dataset: "viktor-shcherb/colabel-copyright-substitution-risk",
+      hf_dataset: "viktoroo/colabel-copyright-substitution-risk",
       hf_config: "default",
       hf_split: "train",
       item_count: 5000,
@@ -121,7 +121,7 @@ const PROJECTS: ProjectSeed[] = [
       "Annotation task for classifying user prompts by the intended mode of AI-assisted writing: human-primary (user remains in control) or AI-primary (AI drafts from scratch).",
     taskType: "chat",
     config: {
-      hf_dataset: "viktor-shcherb/colabel-ai-task-classification",
+      hf_dataset: "viktoroo/colabel-ai-task-classification",
       hf_config: "default",
       hf_split: "train",
       item_count: 5000,
