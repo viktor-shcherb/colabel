@@ -168,3 +168,7 @@ The goal is to categorize each user message by which AI-assisted writing mode it
 export function getProjectBySlug(slug: string): ProjectInfo | null {
   return DEMO_PROJECTS[slug] ?? null;
 }
+
+export function getAllProjects(): ProjectInfo[] {
+  return Object.values(DEMO_PROJECTS);
+}
