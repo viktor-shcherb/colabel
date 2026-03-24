@@ -100,7 +100,7 @@ interface ProjectInfo {
   config: ProjectConfig;
 }
 
-// Hardcoded demo projects (mirrors src/lib/projects.ts)
+// Hardcoded projects (mirrors src/lib/projects.ts)
 const DEMO_PROJECTS: Record<string, ProjectInfo> = {
   "wildchat-quality": {
     id: "00000000-0000-0000-0000-000000000001",
@@ -125,6 +125,57 @@ const DEMO_PROJECTS: Record<string, ProjectInfo> = {
           title: "Safety",
           single_choice: false,
           labels: ["safe", "unsafe", "borderline"],
+        },
+      },
+    },
+  },
+  "copyright-substitution-risk": {
+    id: "00000000-0000-0000-0000-000000000002",
+    slug: "copyright-substitution-risk",
+    name: "Copyright Substitution Risk",
+    description:
+      "Annotation task evaluating prompts for specificity and expression similarity.",
+    config: {
+      hf_dataset: "viktor-shcherb/colabel-copyright-substitution-risk",
+      hf_config: "default",
+      hf_split: "train",
+      item_count: 5000,
+      chat_options: {
+        annotate_roles: ["user"],
+      },
+      label_groups: {
+        specificity: {
+          title: "Specificity",
+          single_choice: true,
+          labels: ["specific", "general"],
+        },
+        expression_similarity: {
+          title: "Expression Similarity",
+          single_choice: true,
+          labels: ["close", "novel"],
+        },
+      },
+    },
+  },
+  "ai-task-classification": {
+    id: "00000000-0000-0000-0000-000000000003",
+    slug: "ai-task-classification",
+    name: "AI Task Mode Annotation",
+    description:
+      "Annotation task for classifying user prompts by AI-assisted writing mode.",
+    config: {
+      hf_dataset: "viktor-shcherb/colabel-ai-task-classification",
+      hf_config: "default",
+      hf_split: "train",
+      item_count: 5000,
+      chat_options: {
+        annotate_roles: ["user"],
+      },
+      label_groups: {
+        task_mode: {
+          title: "Task Mode",
+          single_choice: true,
+          labels: ["human-primary", "AI-primary"],
         },
       },
     },
