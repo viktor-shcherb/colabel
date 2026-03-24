@@ -97,3 +97,21 @@ export const projectMember = pgTable(
     uniqueIndex("idx_pm_project_user").on(table.projectId, table.userId),
   ],
 );
+
+// ── Invite (link-based authentication) ──────────────────────────────
+
+export const invite = pgTable("invite", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  token: text("token").notNull().unique(),
+  email: text("email"),
+  name: text("name"),
+  role: text("role", { enum: ["admin", "annotator"] })
+    .default("annotator")
+    .notNull(),
+  projectId: uuid("project_id").references(() => project.id, {
+    onDelete: "set null",
+  }),
+  expiresAt: timestamp("expires_at").notNull(),
+  usedAt: timestamp("used_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});

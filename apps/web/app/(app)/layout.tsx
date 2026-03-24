@@ -1,4 +1,4 @@
-import { auth0 } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 import { syncUser } from "@/lib/queries/users";
 
 export default async function AppLayout({
@@ -6,7 +6,7 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth0.getSession();
+  const session = await getSession();
   const userProfile = session?.user;
 
   // Sync user to DB (upsert on each visit)
@@ -15,7 +15,7 @@ export default async function AppLayout({
       sub: userProfile.sub as string,
       email: userProfile.email as string,
       name: userProfile.name as string | null,
-      picture: userProfile.picture as string | null,
+      picture: (userProfile.picture as string | null) ?? null,
     });
   }
 
@@ -37,7 +37,7 @@ export default async function AppLayout({
           <span className="text-gray-400">|</span>
           <span className="text-gray-600">{userName}</span>
           <a
-            href="/auth/logout"
+            href="/logout"
             className="text-red-600 hover:underline"
           >
             Log out

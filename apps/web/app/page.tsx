@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
-import { auth0 } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 
 export default async function Home() {
-  const session = await auth0.getSession();
+  const session = await getSession();
 
   if (session) {
     redirect("/projects");
