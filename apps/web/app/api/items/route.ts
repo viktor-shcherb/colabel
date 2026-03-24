@@ -1,6 +1,7 @@
 import { getSession } from "@/lib/auth";
 import { getCachedItem, getCachedItemCount, prefetchItemWindow } from "@/lib/cache";
 import { getProjectBySlug } from "@/lib/projects";
+import { getDbProject } from "@/lib/queries/projects";
 import { getAnnotation } from "@/lib/queries/annotations";
 
 export async function GET(request: Request) {
@@ -33,6 +34,12 @@ export async function GET(request: Request) {
     return Response.json({ error: "Project not found" }, { status: 404 });
   }
 
+  // Get the real DB project ID (not the hardcoded one)
+  const dbProject = await getDbProject(projectSlug);
+  if (!dbProject) {
+    return Response.json({ error: "Project not in database" }, { status: 404 });
+  }
+
   const { hf_dataset, hf_config, hf_split } = proj.config;
   const userId = session.user.sub as string;
 
@@ -41,7 +48,7 @@ export async function GET(request: Request) {
     const [itemCount, item, existingAnnotation] = await Promise.all([
       getCachedItemCount(hf_dataset, hf_config, hf_split),
       getCachedItem(hf_dataset, hf_config, hf_split, index),
-      getAnnotation(proj.id, userId, index),
+      getAnnotation(dbProject.id, userId, index),
     ]);
 
     if (index >= itemCount) {
@@ -63,6 +70,7 @@ export async function GET(request: Request) {
       item,
       itemCount,
       annotation: existingAnnotation?.labels ?? null,
+      projectId: dbProject.id,
     });
   } catch (err) {
     console.error("Failed to fetch item:", err);

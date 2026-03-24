@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getProjectBySlug, type ProjectConfig } from "@/lib/projects";
+import { getDbProject } from "@/lib/queries/projects";
 import { getCachedItemCount } from "@/lib/cache";
 import {
   getAnnotationStats,
@@ -58,6 +59,9 @@ export default async function ProjectStatsPage({
   const project = getProjectBySlug(slug);
   if (!project) notFound();
 
+  const dbProject = await getDbProject(slug);
+  if (!dbProject) notFound();
+
   // Fetch all data in parallel
   const [itemCount, userStats, allLabels] = await Promise.all([
     project.config.item_count ??
@@ -66,8 +70,8 @@ export default async function ProjectStatsPage({
         project.config.hf_config,
         project.config.hf_split,
       ),
-    getAnnotationStats(project.id),
-    getAllAnnotationLabels(project.id),
+    getAnnotationStats(dbProject.id),
+    getAllAnnotationLabels(dbProject.id),
   ]);
 
   const totalAnnotated = userStats.reduce((sum, s) => sum + s.count, 0);

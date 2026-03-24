@@ -1,4 +1,5 @@
 import { getProjectBySlug } from "@/lib/projects";
+import { getDbProject } from "@/lib/queries/projects";
 import { AnnotationPage } from "@/components/annotation/AnnotationPage";
 import { notFound } from "next/navigation";
 
@@ -11,14 +12,14 @@ export default async function AnnotateSlugPage({
 }: AnnotateSlugPageProps) {
   const { slug } = await params;
   const project = getProjectBySlug(slug);
+  if (!project) notFound();
 
-  if (!project) {
-    notFound();
-  }
+  const dbProject = await getDbProject(slug);
+  if (!dbProject) notFound();
 
   return (
     <AnnotationPage
-      projectId={project.id}
+      projectId={dbProject.id}
       projectSlug={project.slug}
       projectName={project.name}
       instructions={project.instructions ?? null}
