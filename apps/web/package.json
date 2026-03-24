@@ -12,7 +12,9 @@
     "db:studio": "drizzle-kit studio",
     "db:import": "tsx scripts/import.ts",
     "db:seed": "tsx scripts/seed.ts",
-    "hf:export": "tsx scripts/hf-export.ts"
+    "hf:export": "tsx scripts/hf-export.ts",
+    "upload-hf": "tsx scripts/upload-to-hf.ts",
+    "migrate": "tsx scripts/migrate-annotations.ts"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.0.0",

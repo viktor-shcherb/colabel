@@ -11,7 +11,9 @@
     "db:studio": "turbo db:studio --filter=web",
     "db:import": "turbo db:import --filter=web",
     "db:seed": "turbo db:seed --filter=web",
-    "hf:export": "turbo hf:export --filter=web"
+    "hf:export": "turbo hf:export --filter=web",
+    "upload-hf": "turbo upload-hf --filter=web",
+    "migrate": "turbo migrate --filter=web"
   },
   "devDependencies": {
     "turbo": "^2.5.0",
