@@ -35,14 +35,7 @@ export async function GET(
     return new NextResponse("This invite link has expired.", { status: 410 });
   }
 
-  // 3. Validate: not already used
-  if (inviteRecord.usedAt) {
-    return new NextResponse("This invite link has already been used.", {
-      status: 410,
-    });
-  }
-
-  // 4. Create/upsert user
+  // 3. Create/upsert user (invite links are reusable until expiry)
   const userId = `invite|${inviteRecord.id}`;
   const userEmail =
     inviteRecord.email ?? `invite-${inviteRecord.id}@colabel.local`;
@@ -87,7 +80,7 @@ export async function GET(
     .setExpirationTime(inviteRecord.expiresAt)
     .sign(getSigningKey());
 
-  // 7. Mark invite as used
+  // 7. Track last usage
   await db
     .update(invite)
     .set({ usedAt: new Date() })
