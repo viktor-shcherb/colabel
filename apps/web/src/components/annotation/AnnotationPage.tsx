@@ -178,67 +178,130 @@ export function AnnotationPage({
   const annotateRoles = config.chat_options.annotate_roles;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <a
             href="/projects"
-            className="text-gray-400 hover:text-gray-600"
+            className="flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
             title="Back to projects"
+            aria-label="Back to projects"
           >
-            &larr;
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M10 12L6 8L10 4" />
+            </svg>
           </a>
-          <h2 className="text-lg font-medium">{projectName}</h2>
+          <h2 className="text-lg font-semibold tracking-tight text-gray-900">
+            {projectName}
+          </h2>
         </div>
         <div className="flex items-center gap-4">
           <a
             href={`/projects/${projectSlug}/stats`}
-            className="text-sm text-blue-600 hover:underline"
+            className="rounded-md px-3 py-1.5 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
           >
             Stats
           </a>
-          <span className="text-sm text-gray-500 tabular-nums">
+          <span className="rounded-md bg-gray-100 px-3 py-1.5 text-sm font-medium tabular-nums text-gray-600">
             Item {currentIndex + 1}
-            {itemCount > 0 && ` of ${itemCount.toLocaleString()}`}
+            {itemCount > 0 && ` / ${itemCount.toLocaleString()}`}
           </span>
         </div>
       </div>
 
       {/* Instructions */}
       {instructions && (
-        <div className="rounded-lg border border-gray-200">
+        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
           <button
             type="button"
             onClick={() => setShowInstructions(!showInstructions)}
-            className="flex w-full items-center justify-between px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            aria-expanded={showInstructions}
           >
             <span>Instructions</span>
-            <span className="text-gray-400">
-              {showInstructions ? "\u25B2" : "\u25BC"}
-            </span>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className={`transition-transform duration-200 ${showInstructions ? "rotate-180" : ""}`}
+            >
+              <path d="M4 6L8 10L12 6" />
+            </svg>
           </button>
-          {showInstructions && (
-            <div className="border-t border-gray-200 px-4 py-3 text-sm text-gray-600 whitespace-pre-wrap">
-              {instructions}
+          <div
+            className={`grid transition-[grid-template-rows] duration-200 ease-in-out ${showInstructions ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+          >
+            <div className="overflow-hidden">
+              <div className="border-t border-gray-200 px-4 py-3 text-sm leading-relaxed text-gray-600 whitespace-pre-wrap">
+                {instructions}
+              </div>
             </div>
-          )}
+          </div>
         </div>
       )}
 
-      {/* Content */}
+      {/* Loading state */}
       {isLoading && (
-        <div className="py-12 text-center text-gray-400">Loading item...</div>
-      )}
-
-      {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {error}
+        <div className="flex items-center justify-center rounded-lg border border-gray-200 bg-white py-16">
+          <div className="text-center">
+            <div className="mx-auto mb-3 h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-gray-600" />
+            <p className="text-sm text-gray-400">Loading item...</p>
+          </div>
         </div>
       )}
 
+      {/* Error state */}
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-5 py-4">
+          <div className="flex items-start gap-3">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="mt-0.5 shrink-0 text-red-500"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <div>
+              <h3 className="text-sm font-medium text-red-800">
+                Failed to load item
+              </h3>
+              <p className="mt-1 text-sm text-red-600">{error}</p>
+              <button
+                type="button"
+                onClick={() => fetchItem(currentIndex)}
+                className="mt-2 text-sm font-medium text-red-700 underline decoration-red-300 underline-offset-2 hover:text-red-800"
+              >
+                Try again
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Messages */}
       {!isLoading && !error && (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {messages.map((msg, idx) => (
             <MessageCard
               key={`${currentIndex}-${idx}`}
@@ -256,7 +319,7 @@ export function AnnotationPage({
 
       {/* Navigation */}
       {!isLoading && !error && itemCount > 0 && (
-        <div className="sticky bottom-0 border-t border-gray-200 bg-white py-3">
+        <div className="sticky bottom-0 z-20 -mx-4 border-t border-gray-200 bg-white/95 px-4 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6">
           <NavigationBar
             currentIndex={currentIndex}
             itemCount={itemCount}

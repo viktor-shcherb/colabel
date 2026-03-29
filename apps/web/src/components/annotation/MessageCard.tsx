@@ -19,15 +19,15 @@ interface MessageCardProps {
 }
 
 const ROLE_STYLES: Record<string, string> = {
-  user: "bg-gray-50 border-gray-200",
-  assistant: "bg-blue-50 border-blue-200",
-  system: "bg-amber-50 border-amber-200",
+  user: "border-gray-200 bg-white",
+  assistant: "border-blue-100 bg-blue-50/50",
+  system: "border-amber-100 bg-amber-50/50",
 };
 
-const ROLE_HEADER_STYLES: Record<string, string> = {
-  user: "text-gray-700",
-  assistant: "text-blue-700",
-  system: "text-amber-700",
+const ROLE_BADGE_STYLES: Record<string, string> = {
+  user: "bg-gray-100 text-gray-600",
+  assistant: "bg-blue-100 text-blue-700",
+  system: "bg-amber-100 text-amber-700",
 };
 
 export function MessageCard({
@@ -39,26 +39,41 @@ export function MessageCard({
   labels,
   onLabelChange,
 }: MessageCardProps) {
-  const cardStyle = ROLE_STYLES[role] ?? "bg-gray-50 border-gray-200";
-  const headerStyle = ROLE_HEADER_STYLES[role] ?? "text-gray-700";
+  const cardStyle = ROLE_STYLES[role] ?? "border-gray-200 bg-white";
+  const badgeStyle = ROLE_BADGE_STYLES[role] ?? "bg-gray-100 text-gray-600";
 
   return (
-    <div className={`rounded-lg border p-4 ${cardStyle}`}>
-      <div className={`mb-2 text-sm font-bold ${headerStyle}`}>{role}</div>
-      <div className="text-sm text-gray-800">
-        <ExpandableContent content={content} />
+    <div
+      className={`rounded-lg border shadow-sm ${cardStyle}`}
+    >
+      {/* Role badge + content */}
+      <div className="p-5">
+        <div className="mb-3">
+          <span
+            className={`inline-block rounded-md px-2 py-0.5 text-xs font-semibold uppercase tracking-wide ${badgeStyle}`}
+          >
+            {role}
+          </span>
+        </div>
+        <div className="text-sm leading-relaxed text-gray-800">
+          <ExpandableContent content={content} />
+        </div>
       </div>
+
+      {/* Label groups */}
       {showLabels && (
-        <div className="mt-4 border-t border-gray-200 pt-3">
-          {Object.entries(labelGroups).map(([groupName, groupConfig]) => (
-            <LabelGroup
-              key={groupName}
-              groupName={groupName}
-              groupConfig={groupConfig}
-              value={labels?.[groupName] ?? null}
-              onChange={(gn, val) => onLabelChange(messageIndex, gn, val)}
-            />
-          ))}
+        <div className="border-t border-gray-100 bg-gray-50/50 px-5 py-4">
+          <div className="space-y-3">
+            {Object.entries(labelGroups).map(([groupName, groupConfig]) => (
+              <LabelGroup
+                key={groupName}
+                groupName={groupName}
+                groupConfig={groupConfig}
+                value={labels?.[groupName] ?? null}
+                onChange={(gn, val) => onLabelChange(messageIndex, gn, val)}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>
