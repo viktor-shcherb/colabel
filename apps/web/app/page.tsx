@@ -30,7 +30,7 @@ export default async function Home() {
           href="/auth/login"
           className="mt-8 inline-flex items-center gap-2 rounded-lg bg-gray-900 px-6 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-gray-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
         >
-          Log in with Google
+          Sign in
         </a>
 
         {/* Footer */}
