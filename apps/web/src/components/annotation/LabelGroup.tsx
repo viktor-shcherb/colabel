@@ -11,6 +11,11 @@ interface LabelGroupProps {
   onChange: (groupName: string, value: string[]) => void;
 }
 
+const selectedClass =
+  "border-blue-600 bg-blue-600 text-white shadow-sm";
+const unselectedClass =
+  "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50";
+
 export function LabelGroup({
   groupName,
   groupConfig,
@@ -21,9 +26,9 @@ export function LabelGroup({
 
   if (groupConfig.single_choice) {
     return (
-      <div className="mb-3">
+      <div>
         {groupConfig.title && (
-          <div className="mb-1.5 text-xs font-medium text-gray-500 uppercase tracking-wide">
+          <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
             {groupConfig.title}
           </div>
         )}
@@ -36,12 +41,8 @@ export function LabelGroup({
             <RadioGroup.Item
               key={label}
               value={label}
-              className={`rounded-full border px-3 py-1 text-sm font-medium transition-colors cursor-pointer
-                ${
-                  selectedValues.includes(label)
-                    ? "border-blue-600 bg-blue-600 text-white"
-                    : "border-gray-300 bg-white text-gray-700 hover:border-gray-400"
-                }`}
+              className={`cursor-pointer rounded-lg border px-3 py-1.5 text-sm font-medium transition-all
+                ${selectedValues.includes(label) ? selectedClass : unselectedClass}`}
             >
               {label}
             </RadioGroup.Item>
@@ -52,9 +53,9 @@ export function LabelGroup({
   }
 
   return (
-    <div className="mb-3">
+    <div>
       {groupConfig.title && (
-        <div className="mb-1.5 text-xs font-medium text-gray-500 uppercase tracking-wide">
+        <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
           {groupConfig.title}
         </div>
       )}
@@ -68,12 +69,8 @@ export function LabelGroup({
           <ToggleGroup.Item
             key={label}
             value={label}
-            className={`rounded-full border px-3 py-1 text-sm font-medium transition-colors cursor-pointer
-              ${
-                selectedValues.includes(label)
-                  ? "border-blue-600 bg-blue-600 text-white"
-                  : "border-gray-300 bg-white text-gray-700 hover:border-gray-400"
-              }`}
+            className={`cursor-pointer rounded-lg border px-3 py-1.5 text-sm font-medium transition-all
+              ${selectedValues.includes(label) ? selectedClass : unselectedClass}`}
           >
             {label}
           </ToggleGroup.Item>

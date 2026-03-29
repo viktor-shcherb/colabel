@@ -24,7 +24,7 @@ export function ExpandableContent({ content }: ExpandableContentProps) {
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
-        className="mt-1 text-sm font-medium text-blue-600 hover:text-blue-800"
+        className="mt-2 text-sm font-medium text-blue-600 underline decoration-blue-200 underline-offset-2 transition-colors hover:text-blue-800 hover:decoration-blue-400"
       >
         {isExpanded ? "Show less" : "Show more"}
       </button>
