@@ -2,6 +2,10 @@
 
 import { ExpandableContent } from "./ExpandableContent";
 import { LabelGroup } from "./LabelGroup";
+import {
+  ComparisonLabels,
+  type ComparisonAnnotation,
+} from "./ComparisonLabels";
 import type { LabelGroupConfig } from "@/lib/projects";
 
 interface MessageCardProps {
@@ -16,6 +20,7 @@ interface MessageCardProps {
     groupName: string,
     value: string[],
   ) => void;
+  comparisonAnnotations?: ComparisonAnnotation[];
 }
 
 const ROLE_STYLES: Record<string, string> = {
@@ -38,6 +43,7 @@ export function MessageCard({
   labelGroups,
   labels,
   onLabelChange,
+  comparisonAnnotations,
 }: MessageCardProps) {
   const cardStyle = ROLE_STYLES[role] ?? "bg-gray-50 border-gray-200";
   const headerStyle = ROLE_HEADER_STYLES[role] ?? "text-gray-700";
@@ -59,6 +65,13 @@ export function MessageCard({
               onChange={(gn, val) => onLabelChange(messageIndex, gn, val)}
             />
           ))}
+          {comparisonAnnotations && comparisonAnnotations.length > 0 && (
+            <ComparisonLabels
+              annotations={comparisonAnnotations}
+              messageIndex={messageIndex}
+              labelGroupNames={Object.keys(labelGroups)}
+            />
+          )}
         </div>
       )}
     </div>

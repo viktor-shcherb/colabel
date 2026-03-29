@@ -3,6 +3,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MessageCard } from "./MessageCard";
 import { NavigationBar } from "./NavigationBar";
+import {
+  ComparisonSettings,
+  type ComparisonConfig,
+} from "./ComparisonSettings";
+import type { ComparisonAnnotation } from "./ComparisonLabels";
 import { saveAnnotationAction } from "@/lib/actions/annotations";
 import type { ProjectConfig } from "@/lib/projects";
 import type { Labels } from "@/lib/schemas/annotation";
@@ -36,6 +41,29 @@ export function AnnotationPage({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showInstructions, setShowInstructions] = useState(false);
+  const [comparisonConfig, setComparisonConfig] = useState<ComparisonConfig>(
+    () => {
+      if (typeof window === "undefined") {
+        return { mode: "never", selectedUserIds: [] };
+      }
+      try {
+        const stored = localStorage.getItem(
+          `colabel-comparison-${projectId}`,
+        );
+        if (stored) {
+          return JSON.parse(stored) as ComparisonConfig;
+        }
+      } catch {
+        // ignore
+      }
+      return { mode: "never", selectedUserIds: [] };
+    },
+  );
+  const [comparisonAnnotations, setComparisonAnnotations] = useState<
+    ComparisonAnnotation[]
+  >([]);
+
+  const comparisonConfigRef = useRef(comparisonConfig);
 
   const isDirtyRef = useRef(isDirty);
   const annotationRef = useRef(annotation);
@@ -51,6 +79,42 @@ export function AnnotationPage({
   useEffect(() => {
     currentIndexRef.current = currentIndex;
   }, [currentIndex]);
+  useEffect(() => {
+    comparisonConfigRef.current = comparisonConfig;
+    try {
+      localStorage.setItem(
+        `colabel-comparison-${projectId}`,
+        JSON.stringify(comparisonConfig),
+      );
+    } catch {
+      // ignore
+    }
+  }, [comparisonConfig, projectId]);
+
+  const fetchComparison = useCallback(
+    async (itemIndex: number) => {
+      const cfg = comparisonConfigRef.current;
+      if (cfg.mode === "never" || cfg.selectedUserIds.length === 0) {
+        setComparisonAnnotations([]);
+        return;
+      }
+      try {
+        const userIds = cfg.selectedUserIds.join(",");
+        const res = await fetch(
+          `/api/annotations/compare?projectId=${encodeURIComponent(projectId)}&itemIndex=${itemIndex}&userIds=${encodeURIComponent(userIds)}`,
+        );
+        if (res.ok) {
+          const data = (await res.json()) as {
+            annotations: ComparisonAnnotation[];
+          };
+          setComparisonAnnotations(data.annotations);
+        }
+      } catch (err) {
+        console.error("Failed to fetch comparison:", err);
+      }
+    },
+    [projectId],
+  );
 
   const fetchItem = useCallback(
     async (index: number) => {
@@ -94,13 +158,28 @@ export function AnnotationPage({
           setAnnotation(emptyLabels);
         }
         setIsDirty(false);
+
+        // Fetch comparison data based on mode
+        const cfg = comparisonConfigRef.current;
+        if (cfg.mode === "always" && cfg.selectedUserIds.length > 0) {
+          fetchComparison(index);
+        } else if (
+          cfg.mode === "on-annotate" &&
+          cfg.selectedUserIds.length > 0 &&
+          data.annotation
+        ) {
+          // Item already has annotation, show comparison immediately
+          fetchComparison(index);
+        } else {
+          setComparisonAnnotations([]);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load item");
       } finally {
         setIsLoading(false);
       }
     },
-    [projectSlug, config.label_groups],
+    [projectSlug, config.label_groups, fetchComparison],
   );
 
   // Load initial item
@@ -118,12 +197,18 @@ export function AnnotationPage({
         labels: annotationRef.current,
       });
       setAnnotatedCount((prev) => prev + 1);
+
+      // Fetch comparison after save in on-annotate mode
+      const cfg = comparisonConfigRef.current;
+      if (cfg.mode === "on-annotate" && cfg.selectedUserIds.length > 0) {
+        fetchComparison(currentIndexRef.current);
+      }
     } catch (err) {
       console.error("Failed to save annotation:", err);
     } finally {
       isSavingRef.current = false;
     }
-  }, [projectId]);
+  }, [projectId, fetchComparison]);
 
   const navigate = useCallback(
     async (newIndex: number) => {
@@ -131,10 +216,28 @@ export function AnnotationPage({
         return;
       }
       await saveCurrentAnnotation();
+      setComparisonAnnotations([]);
       setCurrentIndex(newIndex);
       await fetchItem(newIndex);
     },
     [currentIndex, itemCount, saveCurrentAnnotation, fetchItem],
+  );
+
+  const handleComparisonConfigChange = useCallback(
+    (newConfig: ComparisonConfig) => {
+      setComparisonConfig(newConfig);
+      // If switching to "always" with annotators selected, fetch immediately
+      if (
+        newConfig.mode === "always" &&
+        newConfig.selectedUserIds.length > 0
+      ) {
+        comparisonConfigRef.current = newConfig;
+        fetchComparison(currentIndexRef.current);
+      } else if (newConfig.mode === "never") {
+        setComparisonAnnotations([]);
+      }
+    },
+    [fetchComparison],
   );
 
   // Keyboard shortcuts
@@ -198,6 +301,11 @@ export function AnnotationPage({
           >
             Stats
           </a>
+          <ComparisonSettings
+            projectId={projectId}
+            config={comparisonConfig}
+            onChange={handleComparisonConfigChange}
+          />
           <span className="text-sm text-gray-500 tabular-nums">
             Item {currentIndex + 1}
             {itemCount > 0 && ` of ${itemCount.toLocaleString()}`}
@@ -249,6 +357,11 @@ export function AnnotationPage({
               labelGroups={config.label_groups}
               labels={annotation[idx] ?? null}
               onLabelChange={handleLabelChange}
+              comparisonAnnotations={
+                comparisonAnnotations.length > 0
+                  ? comparisonAnnotations
+                  : undefined
+              }
             />
           ))}
         </div>
