@@ -390,8 +390,8 @@ export function AnnotationPage({
         </div>
       )}
 
-      {/* Navigation */}
-      {!isLoading && !error && itemCount > 0 && (
+      {/* Navigation — always visible once we know itemCount */}
+      {itemCount > 0 && (
         <div className="sticky bottom-0 border-t border-gray-200 bg-white py-3">
           <NavigationBar
             currentIndex={currentIndex}
