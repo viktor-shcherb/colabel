@@ -358,38 +358,40 @@ export function AnnotationPage({
           </div>
         )}
 
-        {/* Content */}
-        {isLoading && (
-          <div className="py-12 text-center text-gray-400">Loading item...</div>
-        )}
+        {/* Content — min-height prevents layout shift during loading */}
+        <div className="min-h-[200px]">
+          {isLoading && (
+            <div className="py-12 text-center text-gray-400">Loading item...</div>
+          )}
 
-        {error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {error}
-          </div>
-        )}
+          {error && (
+            <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {error}
+            </div>
+          )}
 
-        {!isLoading && !error && (
-          <div className="space-y-3">
-            {messages.map((msg, idx) => (
-              <MessageCard
-                key={`${currentIndex}-${idx}`}
-                role={msg.role}
-                content={msg.content}
-                messageIndex={idx}
-                showLabels={annotateRoles.includes(msg.role)}
-                labelGroups={config.label_groups}
-                labels={annotation[idx] ?? null}
-                onLabelChange={handleLabelChange}
-                comparisonAnnotations={
-                  comparisonAnnotations.length > 0
-                    ? comparisonAnnotations
-                    : undefined
-                }
-              />
-            ))}
-          </div>
-        )}
+          {!isLoading && !error && (
+            <div className="space-y-3">
+              {messages.map((msg, idx) => (
+                <MessageCard
+                  key={`${currentIndex}-${idx}`}
+                  role={msg.role}
+                  content={msg.content}
+                  messageIndex={idx}
+                  showLabels={annotateRoles.includes(msg.role)}
+                  labelGroups={config.label_groups}
+                  labels={annotation[idx] ?? null}
+                  onLabelChange={handleLabelChange}
+                  comparisonAnnotations={
+                    comparisonAnnotations.length > 0
+                      ? comparisonAnnotations
+                      : undefined
+                  }
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Navigation — fixed to bottom of viewport */}

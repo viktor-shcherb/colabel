@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import * as Slider from "@radix-ui/react-slider";
 
 interface NavigationBarProps {
@@ -18,6 +19,14 @@ export function NavigationBar({
   const canPrev = currentIndex > 0;
   const canNext = currentIndex < itemCount - 1;
 
+  // Local slider value — updates immediately on drag, without triggering fetches
+  const [sliderValue, setSliderValue] = useState(currentIndex);
+
+  // Sync local value when parent index changes (e.g., from prev/next buttons)
+  useEffect(() => {
+    setSliderValue(currentIndex);
+  }, [currentIndex]);
+
   return (
     <div className="flex items-center gap-4">
       <button
@@ -32,11 +41,16 @@ export function NavigationBar({
       <div className="flex-1">
         <Slider.Root
           className="relative flex h-5 w-full touch-none select-none items-center"
-          value={[currentIndex]}
+          value={[sliderValue]}
           min={0}
           max={Math.max(0, itemCount - 1)}
           step={1}
           onValueChange={([val]) => {
+            if (val !== undefined) {
+              setSliderValue(val);
+            }
+          }}
+          onValueCommit={([val]) => {
             if (val !== undefined && val !== currentIndex) {
               onNavigate(val);
             }
@@ -50,7 +64,7 @@ export function NavigationBar({
       </div>
 
       <div className="min-w-[80px] text-center text-sm text-gray-500 tabular-nums">
-        {annotatedCount} / {itemCount}
+        {sliderValue + 1} / {itemCount}
       </div>
 
       <button
