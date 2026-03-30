@@ -368,7 +368,14 @@ export function AnnotationPage({
 
           {error && (
             <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {error}
+              <p>{error}</p>
+              <button
+                type="button"
+                onClick={() => fetchItem(currentIndex)}
+                className="mt-2 text-xs font-medium text-red-800 underline hover:no-underline"
+              >
+                Try again
+              </button>
             </div>
           )}
 

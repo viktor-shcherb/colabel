@@ -28,6 +28,7 @@ export function NavigationBar({
   }, [currentIndex]);
 
   return (
+    <div className="space-y-1">
     <div className="flex items-center gap-4">
       <button
         type="button"
@@ -75,6 +76,10 @@ export function NavigationBar({
       >
         Next &rarr;
       </button>
+    </div>
+    <p className="text-center text-xs text-gray-400">
+      Use <kbd className="rounded border border-gray-200 bg-gray-50 px-1 font-mono text-[10px]">&larr;</kbd> <kbd className="rounded border border-gray-200 bg-gray-50 px-1 font-mono text-[10px]">&rarr;</kbd> arrow keys to navigate
+    </p>
     </div>
   );
 }
