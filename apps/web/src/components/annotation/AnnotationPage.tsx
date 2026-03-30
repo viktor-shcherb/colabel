@@ -23,6 +23,7 @@ interface AnnotationPageProps {
   projectName: string;
   instructions: string | null;
   config: ProjectConfig;
+  initialIndex?: number;
 }
 
 export function AnnotationPage({
@@ -31,8 +32,19 @@ export function AnnotationPage({
   projectName,
   instructions,
   config,
+  initialIndex,
 }: AnnotationPageProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    // Priority: 1) ?item= param, 2) sessionStorage, 3) 0
+    if (initialIndex !== undefined) return initialIndex;
+    if (typeof window !== "undefined") {
+      try {
+        const stored = sessionStorage.getItem(`colabel-idx-${projectSlug}`);
+        if (stored) return Math.max(0, parseInt(stored, 10) || 0);
+      } catch { /* ignore */ }
+    }
+    return 0;
+  });
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [annotation, setAnnotation] = useState<Labels>([]);
   const [itemCount, setItemCount] = useState(0);
@@ -42,22 +54,7 @@ export function AnnotationPage({
   const [error, setError] = useState<string | null>(null);
   const [showInstructions, setShowInstructions] = useState(false);
   const [comparisonConfig, setComparisonConfig] = useState<ComparisonConfig>(
-    () => {
-      if (typeof window === "undefined") {
-        return { mode: "never", selectedUserIds: [] };
-      }
-      try {
-        const stored = localStorage.getItem(
-          `colabel-comparison-${projectId}`,
-        );
-        if (stored) {
-          return JSON.parse(stored) as ComparisonConfig;
-        }
-      } catch {
-        // ignore
-      }
-      return { mode: "never", selectedUserIds: [] };
-    },
+    { mode: "never", selectedUserIds: [] },
   );
   const [comparisonAnnotations, setComparisonAnnotations] = useState<
     ComparisonAnnotation[]
@@ -79,6 +76,18 @@ export function AnnotationPage({
   useEffect(() => {
     currentIndexRef.current = currentIndex;
   }, [currentIndex]);
+  // Hydrate comparisonConfig from localStorage after mount (avoids hydration mismatch)
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(`colabel-comparison-${projectId}`);
+      if (stored) {
+        const parsed = JSON.parse(stored) as ComparisonConfig;
+        setComparisonConfig(parsed);
+      }
+    } catch { /* ignore */ }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     comparisonConfigRef.current = comparisonConfig;
     try {
@@ -182,10 +191,23 @@ export function AnnotationPage({
     [projectSlug, config.label_groups, fetchComparison],
   );
 
+  // Persist index to sessionStorage + URL
+  const persistIndex = useCallback((index: number) => {
+    try {
+      sessionStorage.setItem(`colabel-idx-${projectSlug}`, String(index));
+    } catch { /* ignore */ }
+    const url = new URL(window.location.href);
+    url.searchParams.set("item", String(index));
+    window.history.replaceState(null, "", url.toString());
+  }, [projectSlug]);
+
   // Load initial item
   useEffect(() => {
-    fetchItem(0);
-  }, [fetchItem]);
+    const startIndex = currentIndexRef.current;
+    persistIndex(startIndex);
+    fetchItem(startIndex);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const saveCurrentAnnotation = useCallback(async () => {
     if (!isDirtyRef.current || isSavingRef.current) return;
@@ -218,9 +240,10 @@ export function AnnotationPage({
       await saveCurrentAnnotation();
       setComparisonAnnotations([]);
       setCurrentIndex(newIndex);
+      persistIndex(newIndex);
       await fetchItem(newIndex);
     },
-    [currentIndex, itemCount, saveCurrentAnnotation, fetchItem],
+    [currentIndex, itemCount, saveCurrentAnnotation, fetchItem, persistIndex],
   );
 
   const handleComparisonConfigChange = useCallback(
