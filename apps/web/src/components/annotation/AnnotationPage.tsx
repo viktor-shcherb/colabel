@@ -304,101 +304,105 @@ export function AnnotationPage({
   const annotateRoles = config.chat_options.annotate_roles;
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <a
-            href="/projects"
-            className="text-gray-400 hover:text-gray-600"
-            title="Back to projects"
-          >
-            &larr;
-          </a>
-          <h2 className="text-lg font-medium">{projectName}</h2>
+    <div className="pb-20">
+      <div className="space-y-4">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <a
+              href="/projects"
+              className="text-gray-400 hover:text-gray-600"
+              title="Back to projects"
+            >
+              &larr;
+            </a>
+            <h2 className="text-lg font-medium">{projectName}</h2>
+          </div>
+          <div className="flex items-center gap-4">
+            <a
+              href={`/projects/${projectSlug}/stats`}
+              className="text-sm text-blue-600 hover:underline"
+            >
+              Stats
+            </a>
+            <ComparisonSettings
+              projectId={projectId}
+              config={comparisonConfig}
+              onChange={handleComparisonConfigChange}
+            />
+            <span className="text-sm text-gray-500 tabular-nums">
+              Item {currentIndex + 1}
+              {itemCount > 0 && ` of ${itemCount.toLocaleString()}`}
+            </span>
+          </div>
         </div>
-        <div className="flex items-center gap-4">
-          <a
-            href={`/projects/${projectSlug}/stats`}
-            className="text-sm text-blue-600 hover:underline"
-          >
-            Stats
-          </a>
-          <ComparisonSettings
-            projectId={projectId}
-            config={comparisonConfig}
-            onChange={handleComparisonConfigChange}
-          />
-          <span className="text-sm text-gray-500 tabular-nums">
-            Item {currentIndex + 1}
-            {itemCount > 0 && ` of ${itemCount.toLocaleString()}`}
-          </span>
-        </div>
+
+        {/* Instructions */}
+        {instructions && (
+          <div className="rounded-lg border border-gray-200">
+            <button
+              type="button"
+              onClick={() => setShowInstructions(!showInstructions)}
+              className="flex w-full items-center justify-between px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              <span>Instructions</span>
+              <span className="text-gray-400">
+                {showInstructions ? "\u25B2" : "\u25BC"}
+              </span>
+            </button>
+            {showInstructions && (
+              <div className="border-t border-gray-200 px-4 py-3 text-sm text-gray-600 whitespace-pre-wrap">
+                {instructions}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Content */}
+        {isLoading && (
+          <div className="py-12 text-center text-gray-400">Loading item...</div>
+        )}
+
+        {error && (
+          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
+        {!isLoading && !error && (
+          <div className="space-y-3">
+            {messages.map((msg, idx) => (
+              <MessageCard
+                key={`${currentIndex}-${idx}`}
+                role={msg.role}
+                content={msg.content}
+                messageIndex={idx}
+                showLabels={annotateRoles.includes(msg.role)}
+                labelGroups={config.label_groups}
+                labels={annotation[idx] ?? null}
+                onLabelChange={handleLabelChange}
+                comparisonAnnotations={
+                  comparisonAnnotations.length > 0
+                    ? comparisonAnnotations
+                    : undefined
+                }
+              />
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Instructions */}
-      {instructions && (
-        <div className="rounded-lg border border-gray-200">
-          <button
-            type="button"
-            onClick={() => setShowInstructions(!showInstructions)}
-            className="flex w-full items-center justify-between px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            <span>Instructions</span>
-            <span className="text-gray-400">
-              {showInstructions ? "\u25B2" : "\u25BC"}
-            </span>
-          </button>
-          {showInstructions && (
-            <div className="border-t border-gray-200 px-4 py-3 text-sm text-gray-600 whitespace-pre-wrap">
-              {instructions}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Content */}
-      {isLoading && (
-        <div className="py-12 text-center text-gray-400">Loading item...</div>
-      )}
-
-      {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {error}
-        </div>
-      )}
-
-      {!isLoading && !error && (
-        <div className="space-y-3">
-          {messages.map((msg, idx) => (
-            <MessageCard
-              key={`${currentIndex}-${idx}`}
-              role={msg.role}
-              content={msg.content}
-              messageIndex={idx}
-              showLabels={annotateRoles.includes(msg.role)}
-              labelGroups={config.label_groups}
-              labels={annotation[idx] ?? null}
-              onLabelChange={handleLabelChange}
-              comparisonAnnotations={
-                comparisonAnnotations.length > 0
-                  ? comparisonAnnotations
-                  : undefined
-              }
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Navigation — always visible once we know itemCount */}
+      {/* Navigation — fixed to bottom of viewport */}
       {itemCount > 0 && (
-        <div className="sticky bottom-0 border-t border-gray-200 bg-white py-3">
-          <NavigationBar
-            currentIndex={currentIndex}
-            itemCount={itemCount}
-            annotatedCount={annotatedCount}
-            onNavigate={navigate}
-          />
+        <div className="fixed bottom-0 left-0 right-0 border-t border-gray-200 bg-white px-4 py-3 shadow-[0_-2px_8px_rgba(0,0,0,0.06)]">
+          <div className="mx-auto max-w-5xl">
+            <NavigationBar
+              currentIndex={currentIndex}
+              itemCount={itemCount}
+              annotatedCount={annotatedCount}
+              onNavigate={navigate}
+            />
+          </div>
         </div>
       )}
     </div>
