@@ -36,6 +36,10 @@ const SAFE_EMAIL_MAP: Record<string, string> = {
   "viktoroo.sch_gmail.com": "viktoroo.sch@gmail.com",
   "christian.peukert_unil.ch": "christian.peukert@unil.ch",
   "legal1": "legal1@colabel.local",
+  // LLM annotators
+  "gpt-5__v1": "gpt-5__v1@llm.colabel.local",
+  "gpt-4.1__v1": "gpt-4.1__v1@llm.colabel.local",
+  "gpt-4.1-mini__v1": "gpt-4.1-mini__v1@llm.colabel.local",
 };
 
 // ── Projects to migrate ──────────────────────────────────────────────

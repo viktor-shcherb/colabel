@@ -18,8 +18,8 @@ export function LabelDistribution({
   }
 
   return (
-    <div className="rounded-lg border border-gray-200">
-      <h3 className="border-b border-gray-200 px-6 py-3 text-sm font-medium text-gray-700">
+    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+      <h3 className="border-b border-gray-200 px-6 py-4 text-xs font-semibold uppercase tracking-wider text-gray-400">
         Label Distribution
       </h3>
       <div className="divide-y divide-gray-100">
@@ -29,11 +29,11 @@ export function LabelDistribution({
           const maxCount = Math.max(...Object.values(counts), 1);
 
           return (
-            <div key={groupName} className="px-6 py-4">
-              <h4 className="mb-3 text-sm font-medium text-gray-800">
+            <div key={groupName} className="px-6 py-5">
+              <h4 className="mb-4 text-sm font-semibold text-gray-800">
                 {groupConfig.title ?? groupName}
               </h4>
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {groupConfig.labels.map((label) => {
                   const count = counts[label] ?? 0;
                   const barPct =
@@ -41,16 +41,16 @@ export function LabelDistribution({
 
                   return (
                     <div key={label} className="flex items-center gap-3">
-                      <span className="min-w-[5rem] text-right text-xs text-gray-600">
+                      <span className="min-w-[6rem] text-right text-xs font-medium text-gray-500">
                         {label}
                       </span>
-                      <div className="h-4 flex-1 overflow-hidden rounded bg-gray-100">
+                      <div className="h-5 flex-1 overflow-hidden rounded bg-gray-100">
                         <div
-                          className="h-full rounded bg-blue-500 transition-all"
+                          className="flex h-full items-center rounded bg-blue-500 transition-all duration-300"
                           style={{ width: `${barPct}%` }}
                         />
                       </div>
-                      <span className="min-w-[3rem] text-right text-xs tabular-nums text-gray-500">
+                      <span className="min-w-[3.5rem] text-right text-xs font-medium tabular-nums text-gray-500">
                         {count.toLocaleString()}
                       </span>
                     </div>
