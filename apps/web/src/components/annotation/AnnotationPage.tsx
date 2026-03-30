@@ -8,6 +8,7 @@ import {
   type ComparisonConfig,
 } from "./ComparisonSettings";
 import type { ComparisonAnnotation } from "./ComparisonLabels";
+import Markdown from "react-markdown";
 import { saveAnnotationAction } from "@/lib/actions/annotations";
 import type { ProjectConfig } from "@/lib/projects";
 import type { Labels } from "@/lib/schemas/annotation";
@@ -353,8 +354,8 @@ export function AnnotationPage({
               </span>
             </button>
             {showInstructions && (
-              <div className="border-t border-gray-200 px-4 py-3 text-sm text-gray-600 whitespace-pre-wrap">
-                {instructions}
+              <div className="border-t border-gray-200 px-4 py-3 text-sm text-gray-600 prose prose-sm prose-gray max-w-none">
+                <Markdown>{instructions}</Markdown>
               </div>
             )}
           </div>
