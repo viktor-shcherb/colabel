@@ -51,6 +51,7 @@ export function AnnotationPage({
   const [annotatedCount, setAnnotatedCount] = useState(0);
   const [isDirty, setIsDirty] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const hasLoadedOnce = useRef(false);
   const [error, setError] = useState<string | null>(null);
   const [showInstructions, setShowInstructions] = useState(false);
   const [comparisonConfig, setComparisonConfig] = useState<ComparisonConfig>(
@@ -127,7 +128,7 @@ export function AnnotationPage({
 
   const fetchItem = useCallback(
     async (index: number) => {
-      setIsLoading(true);
+      if (!hasLoadedOnce.current) setIsLoading(true);
       setError(null);
       try {
         const res = await fetch(
@@ -185,6 +186,7 @@ export function AnnotationPage({
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load item");
       } finally {
+        hasLoadedOnce.current = true;
         setIsLoading(false);
       }
     },
