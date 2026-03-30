@@ -1,7 +1,7 @@
 import "server-only";
 import { db } from "@/db";
 import { annotation, user } from "@/db/schema";
-import { and, eq, sql, gte, lte } from "drizzle-orm";
+import { and, eq, sql, gte, lte, ne, inArray } from "drizzle-orm";
 
 export async function getAnnotation(
   projectId: string,
@@ -80,6 +80,64 @@ export async function getAnnotationStats(
     userEmail: r.userEmail,
     count: Number(r.count),
   }));
+}
+
+export interface AnnotationForItem {
+  userId: string;
+  userName: string | null;
+  labels: unknown;
+}
+
+export async function getAnnotationsForItem(
+  projectId: string,
+  itemIndex: number,
+  excludeUserId?: string,
+): Promise<AnnotationForItem[]> {
+  const conditions = [
+    eq(annotation.projectId, projectId),
+    eq(annotation.itemIndex, itemIndex),
+  ];
+  if (excludeUserId) {
+    conditions.push(ne(annotation.userId, excludeUserId));
+  }
+
+  const rows = await db
+    .select({
+      userId: annotation.userId,
+      userName: user.name,
+      labels: annotation.labels,
+    })
+    .from(annotation)
+    .innerJoin(user, eq(annotation.userId, user.id))
+    .where(and(...conditions));
+
+  return rows;
+}
+
+export async function getAnnotationsForItemByUsers(
+  projectId: string,
+  itemIndex: number,
+  userIds: string[],
+): Promise<AnnotationForItem[]> {
+  if (userIds.length === 0) return [];
+
+  const rows = await db
+    .select({
+      userId: annotation.userId,
+      userName: user.name,
+      labels: annotation.labels,
+    })
+    .from(annotation)
+    .innerJoin(user, eq(annotation.userId, user.id))
+    .where(
+      and(
+        eq(annotation.projectId, projectId),
+        eq(annotation.itemIndex, itemIndex),
+        inArray(annotation.userId, userIds),
+      ),
+    );
+
+  return rows;
 }
 
 export async function getAllAnnotationLabels(
