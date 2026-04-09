@@ -34,6 +34,7 @@ interface LabelGroupConfig {
   title: string | null;
   single_choice: boolean;
   labels: string[];
+  roles?: string[];
 }
 
 interface ProjectConfig {
@@ -61,7 +62,7 @@ const PROJECTS: ProjectSeed[] = [
     slug: "copyright-substitution-risk",
     name: "Copyright Substitution Risk",
     description:
-      "Annotation task evaluating prompts for specificity (reference to specific works or styles) and expression similarity (imitation or summarization of existing content).",
+      "Annotation task evaluating both prompts (attempted substitution risk) and assistant outputs (realized substitution risk) along the same 2x2 axes: specificity (reference to specific works or styles) and expression similarity (imitation, summarization, or reproduction of existing content).",
     taskType: "chat",
     config: {
       hf_dataset: "viktoroo/colabel-copyright-substitution-risk",
@@ -69,18 +70,32 @@ const PROJECTS: ProjectSeed[] = [
       hf_split: "train",
       item_count: 5000,
       chat_options: {
-        annotate_roles: ["user"],
+        annotate_roles: ["user", "assistant"],
       },
       label_groups: {
         specificity: {
-          title: "Specificity",
+          title: "Specificity (prompt)",
           single_choice: true,
           labels: ["specific", "general"],
+          roles: ["user"],
         },
         expression_similarity: {
-          title: "Expression Similarity",
+          title: "Expression Similarity (prompt)",
           single_choice: true,
           labels: ["close", "novel"],
+          roles: ["user"],
+        },
+        output_specificity: {
+          title: "Specificity (output)",
+          single_choice: true,
+          labels: ["specific", "general"],
+          roles: ["assistant"],
+        },
+        output_expression_similarity: {
+          title: "Expression Similarity (output)",
+          single_choice: true,
+          labels: ["close", "novel"],
+          roles: ["assistant"],
         },
       },
     },
