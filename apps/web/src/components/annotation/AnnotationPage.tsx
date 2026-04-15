@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MessageCard } from "./MessageCard";
 import { NavigationBar } from "./NavigationBar";
 import {
@@ -10,7 +10,7 @@ import {
 import type { ComparisonAnnotation } from "./ComparisonLabels";
 import Markdown from "react-markdown";
 import { saveAnnotationAction } from "@/lib/actions/annotations";
-import type { ProjectConfig } from "@/lib/projects";
+import type { LabelGroupConfig, ProjectConfig } from "@/lib/projects";
 import type { Labels } from "@/lib/schemas/annotation";
 
 interface ChatMessage {
@@ -155,14 +155,18 @@ export function AnnotationPage({
         setMessages(conversation);
         setItemCount(data.itemCount);
 
-        // Initialize annotation structure: one dict per message
+        // Initialize annotation structure: one dict per message, with each
+        // dict containing only the label groups that apply to that message's
+        // role (groups without a `roles` field apply to every annotated role).
         if (data.annotation) {
           setAnnotation(data.annotation);
         } else {
-          const emptyLabels: Labels = conversation.map(() => {
+          const emptyLabels: Labels = conversation.map((msg) => {
             const groups: Record<string, string[] | null> = {};
-            for (const groupName of Object.keys(config.label_groups)) {
-              groups[groupName] = null;
+            for (const [groupName, g] of Object.entries(config.label_groups)) {
+              if (!g.roles || g.roles.includes(msg.role)) {
+                groups[groupName] = null;
+              }
             }
             return groups;
           });
@@ -306,6 +310,21 @@ export function AnnotationPage({
 
   const annotateRoles = config.chat_options.annotate_roles;
 
+  // Per-role label group filtering. A label group with `roles: [...]` only
+  // renders for matching turn roles; a group without `roles` applies to
+  // every annotated role (back-compat with existing single-role projects).
+  const labelGroupsByRole = useMemo(() => {
+    const cache: Record<string, Record<string, LabelGroupConfig>> = {};
+    for (const role of annotateRoles) {
+      cache[role] = Object.fromEntries(
+        Object.entries(config.label_groups).filter(
+          ([, g]) => !g.roles || g.roles.includes(role),
+        ),
+      );
+    }
+    return cache;
+  }, [annotateRoles, config.label_groups]);
+
   return (
     <div className="pb-20">
       <div className="space-y-5">
@@ -443,7 +462,9 @@ export function AnnotationPage({
                   content={msg.content}
                   messageIndex={idx}
                   showLabels={annotateRoles.includes(msg.role)}
-                  labelGroups={config.label_groups}
+                  labelGroups={
+                    labelGroupsByRole[msg.role] ?? config.label_groups
+                  }
                   labels={annotation[idx] ?? null}
                   onLabelChange={handleLabelChange}
                   comparisonAnnotations={
