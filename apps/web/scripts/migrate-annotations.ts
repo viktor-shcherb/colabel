@@ -36,10 +36,20 @@ const SAFE_EMAIL_MAP: Record<string, string> = {
   "viktoroo.sch_gmail.com": "viktoroo.sch@gmail.com",
   "christian.peukert_unil.ch": "christian.peukert@unil.ch",
   "legal1": "legal1@colabel.local",
-  // LLM annotators
+  // LLM annotators — v1 prompt (user-side only)
   "gpt-5__v1": "gpt-5__v1@llm.colabel.local",
   "gpt-4.1__v1": "gpt-4.1__v1@llm.colabel.local",
   "gpt-4.1-mini__v1": "gpt-4.1-mini__v1@llm.colabel.local",
+  // LLM annotators — v2 prompt (whole-conversation, user + assistant in one call)
+  "gpt-5__v2": "gpt-5__v2@llm.colabel.local",
+  "gpt-4.1__v2": "gpt-4.1__v2@llm.colabel.local",
+  // LLM annotators — v3 prompt (decoupled per-turn; WildChat-sampled slice shape)
+  "gpt-5__v3": "gpt-5__v3@llm.colabel.local",
+  "gpt-5-mini__v3": "gpt-5-mini__v3@llm.colabel.local",
+  "gpt-5.4__v3": "gpt-5.4__v3@llm.colabel.local",
+  "gpt-5.4-mini__v3": "gpt-5.4-mini__v3@llm.colabel.local",
+  "gpt-4.1__v3": "gpt-4.1__v3@llm.colabel.local",
+  "gpt-4.1-mini__v3": "gpt-4.1-mini__v3@llm.colabel.local",
 };
 
 // ── Projects to migrate ──────────────────────────────────────────────
